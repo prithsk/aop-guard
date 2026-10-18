@@ -17,7 +17,28 @@ When a check blocks a call, the agent is told why and gets two more tries. If it
 ## Results
 
 <!-- results:start -->
-_Run it to populate._
+# Policy checks in code on tau2-bench retail, 2026-10-18
+
+20 tasks, 4 trials each. Agent `gpt-4.1-mini`, simulated user `gpt-4.1-mini`. Same prompt, tools and user for both; the only difference is the code checks.
+
+| Metric | Stock LLM agent | + policy checks in code | Change |
+|---|---|---|---|
+| Average reward | 0.425 | 0.438 | +0.013 |
+| pass^1 | 0.425 | 0.438 | +0.013 |
+| pass^2 | 0.250 | 0.333 | +0.083 |
+| pass^3 | 0.163 | 0.287 | +0.125 |
+| pass^4 | 0.100 | 0.250 | +0.150 |
+| Agent cost per task | $0.0103 | $0.0110 | |
+
+Blocks by rule: one_call 199, one_call_fallback 46, confirm 3, status 1
+
+## Honest limits
+
+- Simulated customers, not real ones. tau2-bench's user simulator is an LLM and makes its own mistakes.
+- Five rules, written from the retail policy text. Decagon's production checks are surely broader; this tests the principle, not their product.
+- 20 tasks. pass^k with k up to 4 shows reliability, but small task counts make the last digit noisy.- Most blocks came from the one-tool-call-at-a-time rule (199 blocks, 46 fallbacks). The confirmation and order-status checks fired 4 times in total, so the reliability gain comes mostly from forcing one action at a time.
+- pass^4 of 0.10 vs 0.25 means 2 vs 5 of 20 tasks solved on all four tries. The gap grows at every k, but the exact values are noisy at this size.
+
 <!-- results:end -->
 
 ## Run it
